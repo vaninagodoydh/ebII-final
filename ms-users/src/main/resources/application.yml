@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: ms-users
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/examen-final
+      client:
+        registration:
+          keycloak:
+            client-id: users-client
+            client-secret: RMp4lW2gGOAh9fot6zrqpgxpXy084PMf
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/examen-final
+
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+dh:
+  keycloak:
+    realm: examen-final
+    serverUrl: http://localhost:8080
+    clientId: users-client
+    clientSecret: RMp4lW2gGOAh9fot6zrqpgxpXy084PMf
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

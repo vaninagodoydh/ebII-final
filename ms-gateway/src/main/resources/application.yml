@@ -1,0 +1,53 @@
+# Configuraciones del servidor
+server:
+  port: 8090
+# Configuraciones de eureka
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+# Configuraciones de spring cloud
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+        - RemoveRequestHeader=Cookie
+      routes:
+        - id: ms-bill
+          uri: lb://ms-bill
+          predicates:
+            - Path=/api/v1/** #http://localhost:8090/api/v1/bills/all
+          filters:
+            - StripPrefix=2
+        - id: ms-users
+          uri: lb://ms-users
+          predicates:
+            - Path=/api/v2/** #http://localhost:8090/api/v2/users/billsPerUser/{id}
+          filters:
+            - StripPrefix=2
+  security:
+    oauth2:
+      client:
+        provider:
+          api-gateway:
+            issuer-uri: http://localhost:8080/realms/examen-final
+        registration:
+          api-gateway:
+            client-id: api-gateway
+            client-secret: 5Jfs2r8TGmbWNX86tuWeF4A6fcgbH3Aa
+            scope: openid, email, profile
+            authorization-grant-type: authorization_code
+            redirect-uri: 'http://localhost:8090/login/oauth2/code/keycloak'
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
